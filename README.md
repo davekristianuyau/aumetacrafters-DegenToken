@@ -1,41 +1,48 @@
-# Project Title
+# Degen Token
+      
 
-Simple overview of use/purpose.
+  // Minting new tokens: The platform should be able to create new tokens and distribute them to players as rewards. Only the owner can mint tokens.
+        
+        function mint(address to, uint256 amount) public onlyOwner {
+            _mint(to, amount);
+        }
 
-## Description
+// Zero Decimals
 
-An in-depth paragraph about your project and overview of use.
+        function decimals() override public pure returns (uint8){
+            return 0;
+        }
 
-## Getting Started
+// Checking token balance: Players should be able to check their token balance at any time.
+        
+        function getBalance() external view returns (uint256){
+            return balanceOf(msg.sender);
+        }
 
-### Installing
+// Transferring tokens: Players should be able to transfer their tokens to others.
+        
+        function transferTokens(address _receiver, uint256 _value) external {
+            require (balanceOf(msg.sender) >= _value, "You do not have enough Degen Tokens");
+            approve(msg.sender, _value);
+            transferFrom(msg.sender, _receiver, _value);
+        }
 
-* How/where to download your program
-* Any modifications needed to be made to files/folders
+// Burning tokens: Anyone should be able to burn tokens, that they own, that are no longer needed.
+        
+        function burnTokens (uint256 _value) external {
+            require (balanceOf(msg.sender) >= _value, "You do not have enough Degen Token");
+            burn(_value);
+        }
 
-### Executing program
+  // Redeeming tokens: Players should be able to redeem their tokens for items in the in-game store.
+        
+        function redeemTokens (uint256 _value) public returns (bool) {
+            require (balanceOf(msg.sender) >= _value, "You do not have enough Degen Tokens");
+            _burn(msg.sender, _value);
 
-* How to run the program
-* Step-by-step bullets
-```
-code blocks for commands
-```
+            // Additional logic for redeeming a t-shirt can be added here, such as updating a user's inventory or triggering an external process.
 
-## Help
-
-Any advise for common problems or issues.
-```
-command to run if program contains helper info
-```
-
-## Authors
-
-Contributors names and contact info
-
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
-
-
-## License
-
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
+            // Add an event or return a string to indicate successful redemption.
+            emit TokensRedeemed(msg.sender, _value);
+            return true;
+        }
